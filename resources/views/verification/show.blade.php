@@ -192,6 +192,7 @@
                 }
             }
         </style>
+        <link rel="stylesheet" href="{{ asset('assets/css/app-ui.css') }}">
     </head>
 
     <body>
@@ -209,7 +210,7 @@
                     @if(session('warning'))
                     <div class="alert-box alert-warning">
                         <div class="alert-title">
-                            ⚠ PDF Final Belum Tersedia
+                            PDF Final Belum Tersedia
                         </div>
 
                         <div>
@@ -221,7 +222,7 @@
                 @if(session('error'))
                     <div class="alert-box alert-error">
                         <div class="alert-title">
-                            ❌ PDF Final Tidak Tersedia
+                            PDF Final Tidak Tersedia
                         </div>
 
                         <div>
@@ -374,7 +375,7 @@
                                 href="{{ route('verify.download', $document->verification_token) }}"
                                 class="download-btn"
                             >
-                                📄 Unduh Dokumen Resmi
+                                Unduh Dokumen Resmi
                             </a>
                         </div>
                     @endif

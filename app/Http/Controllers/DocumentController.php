@@ -17,7 +17,6 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 
-
 class DocumentController extends Controller
 {
     /**
@@ -26,11 +25,11 @@ class DocumentController extends Controller
     public function index()
     {
         $documents = Document::query()
-        ->with('signer')
-        ->latest()
-        ->get();
+            ->with('signer')
+            ->latest()
+            ->get();
 
-    return view('documents.index', compact('documents'));
+        return view('documents.index', compact('documents'));
     }
 
     /**
@@ -38,7 +37,7 @@ class DocumentController extends Controller
      */
     public function create()
     {
-         $signers = Signer::query()
+        $signers = Signer::query()
             ->where('is_active', true)
             ->orderBy('name')
             ->get();
@@ -54,7 +53,8 @@ class DocumentController extends Controller
         $validated = $request->validate([
             'document_number' => [
                 'required',
-                'string',                'max:100',
+                'string',
+                'max:100',
                 'unique:documents,document_number',
             ],
 
@@ -144,29 +144,6 @@ class DocumentController extends Controller
         );
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Document $document)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Document $document)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Document $document)
-    {
-        //
-    }
     public function viewOriginal(Document $document)
     {
         $disk = Storage::disk('local');
@@ -293,6 +270,15 @@ class DocumentController extends Controller
         }
 
         $document->load('qrPositions');
+
+        if ($document->qrPositions->isEmpty()) {
+            return redirect()
+                ->route('documents.show', $document)
+                ->with(
+                    'error',
+                    'Atur dan simpan posisi QR Code terlebih dahulu.'
+                );
+        }
 
         $logoPath = public_path('assets/logo/isa-logo.jpg');
 
@@ -666,7 +652,12 @@ class DocumentController extends Controller
     public function verifyFile(Request $request)
     {
         $request->validate([
-        'pdf' => 'required|file|mimes:pdf',
+            'pdf' => [
+                'required',
+                'file',
+                'mimes:pdf',
+                'max:10240',
+            ],
         ]);
 
         $hash = hash_file(
@@ -674,15 +665,22 @@ class DocumentController extends Controller
             $request->file('pdf')->getRealPath()
         );
 
+        if ($hash === false) {
+            return back()
+                ->withErrors([
+                    'pdf' => 'Gagal membaca hash file PDF.',
+                ]);
+        }
+
         $document = Document::where('sha256_hash', $hash)->first();
 
         $status = 'not_found';
 
         if ($document) {
 
-            if ($document->status === 'published') {
+            if ($document->status === 'PUBLISHED') {
                 $status = 'published';
-            } elseif ($document->status === 'revoked') {
+            } elseif ($document->status === 'REVOKED') {
                 $status = 'revoked';
             } else {
                 $status = 'draft';
@@ -704,8 +702,7 @@ class DocumentController extends Controller
             $token
         )->first();
 
-        // Token tidak ditemukan
-        if (!$document) {
+        if (! $document) {
             abort(404, 'Dokumen tidak ditemukan.');
         }
 
@@ -733,7 +730,10 @@ class DocumentController extends Controller
 
         $disk = Storage::disk('local');
 
-        if ($disk->missing($document->final_pdf_path)) {
+        if (
+            empty($document->final_pdf_path)
+            || $disk->missing($document->final_pdf_path)
+        ) {
 
             abort(
                 404,
@@ -754,7 +754,14 @@ class DocumentController extends Controller
 
     public function saveQrPosition(Request $request, Document $document)
     {
-        $request->validate([
+        if ($document->status !== 'DRAFT') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Posisi QR hanya dapat diubah saat dokumen masih Draft.',
+            ], 422);
+        }
+
+        $validated = $request->validate([
             'page'   => 'required|integer|min:1',
             'x'      => 'required|numeric|between:0,1',
             'y'      => 'required|numeric|between:0,1',
@@ -762,22 +769,32 @@ class DocumentController extends Controller
             'height' => 'required|numeric|between:0,1',
         ]);
 
+        if (
+            $validated['x'] + $validated['width'] > 1
+            || $validated['y'] + $validated['height'] > 1
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Posisi dan ukuran QR melewati batas halaman.',
+            ], 422);
+        }
+
         DocumentQrPosition::updateOrCreate(
 
-        [
-            'document_id' => $document->id,
-            'page_number' => $request->page,
-            'sort_order' => 1,
-        ],
+            [
+                'document_id' => $document->id,
+                'page_number' => $validated['page'],
+                'sort_order' => 1,
+            ],
 
-        [
-            'position_x' => $request->x,
-            'position_y' => $request->y,
-            'width' => $request->width,
-            'height' => $request->height,
-        ]
+            [
+                'position_x' => $validated['x'],
+                'position_y' => $validated['y'],
+                'width' => $validated['width'],
+                'height' => $validated['height'],
+            ]
 
-    );
+        );
 
         return response()->json([
             'success' => true,

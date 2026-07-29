@@ -126,6 +126,7 @@
             color: #ffffff;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('assets/css/app-ui.css') }}">
 </head>
 
 <body>
@@ -230,7 +231,7 @@
                             {{ old('signer_id') == $signer->id ? 'selected' : '' }}
                         >
                             {{ $signer->name }}
-                            — {{ $signer->position }}
+                            - {{ $signer->position }}
                         </option>
                     @endforeach
                 </select>

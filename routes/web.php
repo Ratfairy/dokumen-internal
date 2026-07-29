@@ -13,7 +13,8 @@ Route::patch(
     '/signers/{signer}/toggle-status',
     [SignerController::class, 'toggleStatus']
 )->name('signers.toggle-status');
-Route::resource('signers', SignerController::class);
+Route::resource('signers', SignerController::class)
+    ->only(['index', 'create', 'store', 'edit', 'update']);
 
 Route::get(
     '/documents/{document}/original',
@@ -75,7 +76,10 @@ Route::get(
     [DocumentController::class, 'qrEditor']
 )->name('documents.qr-editor');
 
-Route::get('/verify/{token}/download', [DocumentController::class, 'downloadVerifiedPdf'])
+Route::get(
+    '/verify/{token}/download',
+    [DocumentController::class, 'downloadVerifiedPdf']
+)
     ->name('verify.download');
 
 Route::post(
@@ -83,4 +87,5 @@ Route::post(
     [DocumentController::class, 'saveQrPosition']
 )->name('documents.save-qr-position');
 
-Route::resource('documents', DocumentController::class);
+Route::resource('documents', DocumentController::class)
+    ->only(['index', 'create', 'store', 'show']);

@@ -98,6 +98,15 @@
             text-decoration: none;
             font-weight: bold;
         }
+        .button-secondary {
+            display: inline-block;
+            padding: 11px 16px;
+            border-radius: 5px;
+            background-color: #6b7280;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+        }
         .alert-success {
             margin-bottom: 20px;
             padding: 14px;
@@ -147,6 +156,7 @@
             background-color: #16a34a;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('assets/css/app-ui.css') }}">
 </head>
 
 <body>

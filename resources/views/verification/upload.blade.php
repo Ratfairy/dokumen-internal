@@ -48,7 +48,17 @@
             button:hover{
                 background:#1d4ed8;
             }
+
+            .error{
+                margin-top:15px;
+                color:#b91c1c;
+                background:#fef2f2;
+                border:1px solid #fecaca;
+                border-radius:6px;
+                padding:12px;
+            }
         </style>
+        <link rel="stylesheet" href="{{ asset('assets/css/app-ui.css') }}">
 
     </head>
 
@@ -62,6 +72,21 @@
             Upload file PDF untuk memverifikasi apakah dokumen berasal dari sistem
             dan belum pernah dimodifikasi.
         </p>
+
+        <div class="actions">
+            <a
+                href="{{ route('documents.index') }}"
+                class="button button-secondary"
+            >
+                Kembali ke Daftar Dokumen
+            </a>
+        </div>
+
+        @if ($errors->any())
+            <div class="error">
+                {{ $errors->first() }}
+            </div>
+        @endif
 
         <form
             action="{{ route('verify.file') }}"

@@ -138,6 +138,7 @@
             text-decoration: none;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('assets/css/app-ui.css') }}">
 </head>
 
 <body>
@@ -155,6 +156,13 @@
                     class="button button-secondary"
                 >
                     Master Penandatangan
+                </a>
+
+                <a
+                    href="{{ route('verify.file.form') }}"
+                    class="button button-verification"
+                >
+                    Verifikasi Dokumen
                 </a>
                 
             </div>

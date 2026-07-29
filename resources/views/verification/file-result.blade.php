@@ -91,6 +91,7 @@
                 border-radius:6px;
             }
         </style>
+        <link rel="stylesheet" href="{{ asset('assets/css/app-ui.css') }}">
     </head>
 
     <body>
@@ -100,28 +101,28 @@
         @if($status == 'published')
 
             <div class="success">
-                <h2>✅ Dokumen ASLI</h2>
+                <h2>Dokumen ASLI</h2>
                 <p>File identik dengan dokumen yang telah diterbitkan oleh sistem.</p>
             </div>
 
         @elseif($status == 'revoked')
 
             <div class="warning">
-                <h2>⚠️ Dokumen Asli tetapi Sudah Dicabut</h2>
+                <h2>Dokumen Asli tetapi Sudah Dicabut</h2>
                 <p>File ini memang berasal dari sistem, namun status dokumen sudah dicabut.</p>
             </div>
 
         @elseif($status == 'draft')
 
             <div class="info">
-                <h2>ℹ️ Dokumen Ditemukan</h2>
+                <h2>Dokumen Ditemukan</h2>
                 <p>File cocok dengan data di sistem, tetapi dokumen belum diterbitkan.</p>
             </div>
 
         @elseif($status == 'not_found')
 
             <div class="danger">
-                <h2>❌ Dokumen Tidak Valid</h2>
+                <h2>Dokumen Tidak Valid</h2>
                 <p>
                     Hash PDF tidak ditemukan di database.<br>
                     Kemungkinan file telah dimodifikasi atau bukan berasal dari sistem.
@@ -172,6 +173,13 @@
 
         <a href="{{ route('verify.file.form') }}" class="button">
             Verifikasi Lagi
+        </a>
+
+        <a
+            href="{{ route('documents.index') }}"
+            class="button button-secondary"
+        >
+            Kembali ke Daftar Dokumen
         </a>
 
     </div>

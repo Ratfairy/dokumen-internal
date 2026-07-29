@@ -240,21 +240,6 @@
                 word-break: break-all;
             }
 
-            .qr-card {
-                text-align: center;
-            }
-
-            .qr-preview {
-                display: block;
-                width: 320px;
-                max-width: 100%;
-                height: auto;
-                margin: 20px auto;
-                border: 1px solid #d1d5db;
-                border-radius: 8px;
-                background-color: #ffffff;
-            }
-
             .qr-note {
                 max-width: 650px;
                 margin: 0 auto;
@@ -430,6 +415,7 @@
                 }
             }
         </style>
+        <link rel="stylesheet" href="{{ asset('assets/css/app-ui.css') }}">
     </head>
 
     <body>
@@ -702,7 +688,7 @@
                                 type="submit"
                                 class="button button-publish"
                             >
-                                ✓ Terbitkan Dokumen
+                                Terbitkan Dokumen
                             </button>
                         </form>
                     @endif
@@ -742,18 +728,6 @@
                         Kembali
                     </a>
 
-                    {{-- BUKA PDF ASLI --}}
-                    <a
-                        href="{{ route(
-                            'documents.original',
-                            $document
-                        ) }}"
-                        class="button button-primary"
-                        target="_blank"
-                    >
-                        Buka PDF Asli
-                    </a>
-
                     {{-- HALAMAN VERIFIKASI --}}
                     @if ($document->verification_token)
                         <a
@@ -767,54 +741,8 @@
                             Buka Halaman Verifikasi
                         </a>
                     @endif
-
-                    {{-- QR CODE --}}
-                    @if ($document->verification_token)
-                        <a
-                            href="{{ route(
-                                'documents.qr-code',
-                                $document
-                            ) }}"
-                            class="button button-qr"
-                            target="_blank"
-                        >
-                            Buka QR Code
-                        </a>
-                    @endif
                 </div>
             </div>
-
-            {{-- PREVIEW QR --}}
-            @if ($document->verification_token)
-                <div class="card qr-card">
-                    <h2>QR Code Verifikasi</h2>
-
-                    <p class="qr-note">
-                        QR Code ini mengarah ke halaman verifikasi dokumen.
-                        Logo ISA ditampilkan pada bagian tengah QR Code.
-                    </p>
-
-                    <img
-                        src="{{ route(
-                            'documents.qr-code',
-                            $document
-                        ) }}"
-                        alt="QR Code Verifikasi Dokumen"
-                        class="qr-preview"
-                    >
-
-                    <a
-                        href="{{ route(
-                            'documents.qr-code',
-                            $document
-                        ) }}"
-                        class="button button-qr"
-                        target="_blank"
-                    >
-                        Buka QR Code di Tab Baru
-                    </a>
-                </div>
-            @endif
 
             {{-- PREVIEW PDF FINAL --}}
             @if ($document->final_pdf_path)
@@ -852,7 +780,7 @@
                         class="button button-secondary"
                         type="button"
                     >
-                        ◀ Sebelumnya
+                        Sebelumnya
                     </button>
 
                     <span id="page-info">
@@ -864,7 +792,7 @@
                         class="button button-secondary"
                         type="button"
                     >
-                        Berikutnya ▶
+                        Berikutnya
                     </button>
 
                 </div>
@@ -876,7 +804,7 @@
                         class="button button-secondary"
                         type="button"
                     >
-                        −
+                        -
                     </button>
 
                     <span id="zoom-info">
@@ -900,7 +828,7 @@
                         type="button"
                         class="button button-success">
 
-                        💾 Simpan Posisi QR
+                        Simpan Posisi QR
 
                     </button>
 
@@ -916,6 +844,25 @@
 
             </div>
         </div>
+
+        <div
+            id="qr-save-loading"
+            class="app-loading-backdrop"
+            aria-hidden="true"
+        >
+            <div class="app-loading-card">
+                <div class="app-spinner"></div>
+                <p class="app-loading-title">Menyimpan posisi QR</p>
+                <p class="app-loading-text">Mohon tunggu sebentar.</p>
+            </div>
+        </div>
+
+        <div
+            id="qr-save-toast"
+            class="app-toast"
+            role="status"
+            aria-live="polite"
+        ></div>
     </body>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -944,42 +891,76 @@
     let startHeight = 0;
     let startLeft = 0;
     let startTop = 0;
+    let toastTimeout = null;
+
+    function setQrSaving(isSaving) {
+        const loading = document.getElementById("qr-save-loading");
+        const saveButton = document.getElementById("btn-save-position");
+
+        loading.classList.toggle("is-visible", isSaving);
+        loading.setAttribute("aria-hidden", isSaving ? "false" : "true");
+        saveButton.disabled = isSaving;
+    }
+
+    function showQrToast(type, message) {
+        const toast = document.getElementById("qr-save-toast");
+
+        clearTimeout(toastTimeout);
+
+        toast.textContent = message;
+        toast.className = `app-toast is-visible is-${type}`;
+
+        toastTimeout = setTimeout(function () {
+            toast.className = "app-toast";
+        }, 3500);
+    }
 
 
     document
         .getElementById("btn-save-position")
-        .addEventListener("click", function () {
+        .addEventListener("click", async function () {
 
-                const qr = document.querySelector(".qr-overlay");
-                const pageWidth = qr.parentElement.clientWidth;
-                const pageHeight = qr.parentElement.clientHeight;
+            const qr = document.querySelector(".qr-overlay");
 
-            fetch("{{ route('documents.save-qr-position', $document) }}", {
+            if (! qr) {
+                showQrToast("error", "QR belum tampil. Tunggu PDF selesai dimuat.");
+                return;
+            }
 
-                method: "POST",
+            const pageWidth = qr.parentElement.clientWidth;
+            const pageHeight = qr.parentElement.clientHeight;
 
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
+            setQrSaving(true);
 
-                body: JSON.stringify({
+            try {
+                const response = await fetch(
+                    "{{ route('documents.save-qr-position', $document) }}",
+                    {
+                        method: "POST",
 
-                    page: currentPage,
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                            "Accept": "application/json"
+                        },
 
-                    x: Number(qr.dataset.x) / pageWidth,
+                        body: JSON.stringify({
+                            page: currentPage,
+                            x: Number(qr.dataset.x) / pageWidth,
+                            y: Number(qr.dataset.y) / pageHeight,
+                            width: Number(qr.dataset.size) / pageWidth,
+                            height: Number(qr.dataset.size) / pageHeight
+                        })
+                    }
+                );
 
-                    y: Number(qr.dataset.y) / pageHeight,
+                const data = await response.json();
 
-                    width: Number(qr.dataset.size) / pageWidth,
-
-                    height: Number(qr.dataset.size) / pageHeight
-
-                })
-
-            })
-            .then(response => response.json())
-            .then(data => {
+                if (! response.ok || ! data.success) {
+                    throw new Error(
+                        data.message || "Posisi QR gagal disimpan."
+                    );
+                }
 
                 const savedQr = {
                     page_number: currentPage,
@@ -999,14 +980,18 @@
                     qrStates.push(savedQr);
                 }
 
-                console.log(qrStates);
-
-            })
-            .catch(error => {
-
-                console.error(error);
-
-            });
+                showQrToast(
+                    "success",
+                    data.message || "Posisi QR berhasil disimpan."
+                );
+            } catch (error) {
+                showQrToast(
+                    "error",
+                    error.message || "Posisi QR gagal disimpan."
+                );
+            } finally {
+                setQrSaving(false);
+            }
         });
 
     async function loadPdf() {
