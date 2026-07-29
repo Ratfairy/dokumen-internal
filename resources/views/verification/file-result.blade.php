@@ -12,12 +12,20 @@
             }
 
             .card{
-                max-width:800px;
+                max-width:920px;
                 margin:auto;
                 background:white;
                 border-radius:10px;
                 padding:35px;
                 box-shadow:0 5px 15px rgba(0,0,0,.08);
+            }
+
+            .result-actions{
+                display:flex;
+                align-items:center;
+                gap:12px;
+                flex-wrap:wrap;
+                margin-top:25px;
             }
 
             .success{
@@ -82,13 +90,22 @@
             }
 
             .button{
-                display:inline-block;
-                margin-top:25px;
-                padding:12px 25px;
+                display:inline-flex;
+                align-items:center;
+                justify-content:center;
+                min-height:40px;
+                padding:10px 16px;
                 background:#2563eb;
                 color:white;
+                font-weight:700;
+                line-height:1.2;
                 text-decoration:none;
-                border-radius:6px;
+                border-radius:7px;
+                box-shadow:0 1px 2px rgba(15,23,42,.08);
+            }
+
+            .button-secondary{
+                background:#475467;
             }
         </style>
         <link rel="stylesheet" href="{{ asset('assets/css/app-ui.css') }}">
@@ -171,16 +188,18 @@
 
         @endif
 
-        <a href="{{ route('verify.file.form') }}" class="button">
-            Verifikasi Lagi
-        </a>
+        <div class="result-actions">
+            <a href="{{ route('verify.file.form') }}" class="button">
+                Verifikasi Lagi
+            </a>
 
-        <a
-            href="{{ route('documents.index') }}"
-            class="button button-secondary"
-        >
-            Kembali ke Daftar Dokumen
-        </a>
+            <a
+                href="{{ route('documents.index') }}"
+                class="button button-secondary"
+            >
+                Master Document
+            </a>
+        </div>
 
     </div>
 

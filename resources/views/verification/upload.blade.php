@@ -13,7 +13,7 @@
             }
 
             .card{
-                max-width:700px;
+                max-width:920px;
                 margin:auto;
                 background:white;
                 border-radius:10px;
@@ -24,6 +24,46 @@
             h1{
                 margin-top:0;
                 color:#12345b;
+            }
+
+            .page-header{
+                display:flex;
+                align-items:flex-start;
+                justify-content:space-between;
+                gap:24px;
+                margin-bottom:24px;
+            }
+
+            .page-header h1{
+                margin-bottom:10px;
+            }
+
+            .page-header p{
+                max-width:620px;
+                margin:0;
+                color:#475467;
+                line-height:1.55;
+            }
+
+            .button{
+                display:inline-flex;
+                align-items:center;
+                justify-content:center;
+                min-height:40px;
+                padding:10px 16px;
+                border:0;
+                border-radius:7px;
+                color:#ffffff;
+                font-weight:700;
+                line-height:1.2;
+                text-align:center;
+                text-decoration:none;
+                white-space:nowrap;
+                box-shadow:0 1px 2px rgba(15,23,42,.08);
+            }
+
+            .button-secondary{
+                background:#475467;
             }
 
             .form-group{
@@ -57,6 +97,16 @@
                 border-radius:6px;
                 padding:12px;
             }
+
+            @media (max-width:700px){
+                .page-header{
+                    flex-direction:column;
+                }
+
+                .page-header .button{
+                    width:100%;
+                }
+            }
         </style>
         <link rel="stylesheet" href="{{ asset('assets/css/app-ui.css') }}">
 
@@ -66,19 +116,21 @@
 
     <div class="card">
 
-        <h1>Verifikasi Keaslian PDF</h1>
+        <div class="page-header">
+            <div>
+                <h1>Verifikasi Keaslian PDF</h1>
 
-        <p>
-            Upload file PDF untuk memverifikasi apakah dokumen berasal dari sistem
-            dan belum pernah dimodifikasi.
-        </p>
+                <p>
+                    Upload file PDF untuk memverifikasi apakah dokumen berasal dari sistem
+                    dan belum pernah dimodifikasi.
+                </p>
+            </div>
 
-        <div class="actions">
             <a
                 href="{{ route('documents.index') }}"
                 class="button button-secondary"
             >
-                Kembali ke Daftar Dokumen
+                Master Document
             </a>
         </div>
 
