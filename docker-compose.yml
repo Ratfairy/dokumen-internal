@@ -1,0 +1,59 @@
+services:
+
+  app:
+    image: dokumen-internal-php:latest
+    container_name: dokumen-internal-app
+
+    volumes:
+      - ./:/var/www/html
+
+    networks:
+      - dokumen-network
+
+
+  mysql:
+    image: mysql:8.4
+
+    container_name: dokumen-internal-mysql
+
+    environment:
+      MYSQL_DATABASE: dokumen_internal
+      MYSQL_USER: dokumen_user
+      MYSQL_PASSWORD: dokumen_password
+      MYSQL_ROOT_PASSWORD: root_password
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+    networks:
+      - dokumen-network
+
+
+  nginx:
+    image: nginx:alpine
+
+    container_name: dokumen-internal-nginx
+
+    ports:
+      - "8080:80"
+
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+    depends_on:
+      - app
+
+    networks:
+      - dokumen-network
+
+
+networks:
+  dokumen-network:
+
+
+volumes:
+  mysql-data:
