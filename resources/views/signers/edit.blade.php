@@ -199,7 +199,7 @@
 
             <div class="form-group">
                 <label for="work_unit">
-                    Unit Kerja <span class="required">*</span>
+                    Departemen <span class="required">*</span>
                 </label>
 
                 <input
@@ -217,7 +217,7 @@
 
             <div class="form-group">
                 <label for="institution">
-                    Instansi <span class="required">*</span>
+                    Nama Perusahaan <span class="required">*</span>
                 </label>
 
                 <input

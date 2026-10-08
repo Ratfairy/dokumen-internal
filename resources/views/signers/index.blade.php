@@ -193,8 +193,8 @@
                     <th>Nama</th>
                     <th>Nomor Pegawai</th>
                     <th>Jabatan</th>
-                    <th>Unit Kerja</th>
-                    <th>Instansi</th>
+                    <th>Departemen</th>
+                    <th>Nama Perusahaan</th>
                     <th style="width: 100px;">Status</th>
                     <th style="width: 220px;">Aksi</th>
                 </tr>

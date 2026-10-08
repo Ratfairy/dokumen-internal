@@ -306,7 +306,7 @@
                         </div>
 
                         <div class="detail-label">
-                            Unit Kerja
+                            Departemen
                         </div>
 
                         <div class="detail-value">
@@ -314,7 +314,7 @@
                         </div>
 
                         <div class="detail-label">
-                            Instansi
+                            Nama Perusahaan
                         </div>
 
                         <div class="detail-value">

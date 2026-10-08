@@ -495,7 +495,7 @@
                     </div>
 
                     <div class="detail-label">
-                        Unit Kerja
+                        Departemen
                     </div>
 
                     <div class="detail-value">
@@ -504,7 +504,7 @@
                     </div>
 
                     <div class="detail-label">
-                        Instansi
+                        Nama Perusahaan
                     </div>
 
                     <div class="detail-value">
@@ -765,114 +765,119 @@
             @endif
 
             {{-- QR PLACEMENT EDITOR --}}
-            <div class="card">
+            @if ($document->status === 'DRAFT')
+                <div class="card">
 
-                <h2>QR Placement Editor</h2>
+                    <h2>QR Placement Editor</h2>
 
-                <p class="description">
-                    Atur posisi QR Code pada dokumen sebelum membuat PDF Final.
-                </p>
+                    <p class="description">
+                        Atur posisi QR Code pada dokumen sebelum membuat PDF Final.
+                    </p>
 
-                <div class="pdf-toolbar">
+                    <div class="pdf-toolbar">
 
-                    <button
-                        id="btn-prev"
-                        class="button button-secondary"
-                        type="button"
-                    >
-                        Sebelumnya
-                    </button>
+                        <button
+                            id="btn-prev"
+                            class="button button-secondary"
+                            type="button"
+                        >
+                            Sebelumnya
+                        </button>
 
-                    <span id="page-info">
-                        Halaman 1 / 1
-                    </span>
+                        <span id="page-info">
+                            Halaman 1 / 1
+                        </span>
 
-                    <button
-                        id="btn-next"
-                        class="button button-secondary"
-                        type="button"
-                    >
-                        Berikutnya
-                    </button>
+                        <button
+                            id="btn-next"
+                            class="button button-secondary"
+                            type="button"
+                        >
+                            Berikutnya
+                        </button>
 
-                </div>
+                    </div>
 
-                <div class="pdf-zoom-toolbar">
+                    <div class="pdf-zoom-toolbar">
 
-                    <button
-                        id="btn-zoom-out"
-                        class="button button-secondary"
-                        type="button"
-                    >
-                        -
-                    </button>
+                        <button
+                            id="btn-zoom-out"
+                            class="button button-secondary"
+                            type="button"
+                        >
+                            -
+                        </button>
 
-                    <span id="zoom-info">
-                        100%
-                    </span>
+                        <span id="zoom-info">
+                            100%
+                        </span>
 
-                    <button
-                        id="btn-zoom-in"
-                        class="button button-secondary"
-                        type="button"
-                    >
-                        +
-                    </button>
+                        <button
+                            id="btn-zoom-in"
+                            class="button button-secondary"
+                            type="button"
+                        >
+                            +
+                        </button>
 
-                </div>
+                    </div>
 
-                <div style="text-align:center;margin-bottom:20px;">
+                    <div style="text-align:center;margin-bottom:20px;">
 
-                    <button
-                        id="btn-save-position"
-                        type="button"
-                        class="button button-success">
+                        <button
+                            id="btn-save-position"
+                            type="button"
+                            class="button button-success">
 
-                        Simpan Posisi QR
+                            Simpan Posisi QR
 
-                    </button>
+                        </button>
 
-                </div>
+                    </div>
 
-                <div class="pdf-editor">
+                    <div class="pdf-editor">
 
-                    <div id="pdf-pages">
+                        <div id="pdf-pages">
+
+                        </div>
 
                     </div>
 
                 </div>
-
-            </div>
+            @endif
         </div>
 
-        <div
-            id="qr-save-loading"
-            class="app-loading-backdrop"
-            aria-hidden="true"
-        >
-            <div class="app-loading-card">
-                <div class="app-spinner"></div>
-                <p class="app-loading-title">Menyimpan posisi QR</p>
-                <p class="app-loading-text">Mohon tunggu sebentar.</p>
+        @if ($document->status === 'DRAFT')
+            <div
+                id="qr-save-loading"
+                class="app-loading-backdrop"
+                aria-hidden="true"
+            >
+                <div class="app-loading-card">
+                    <div class="app-spinner"></div>
+                    <p class="app-loading-title">Menyimpan posisi QR</p>
+                    <p class="app-loading-text">Mohon tunggu sebentar.</p>
+                </div>
             </div>
-        </div>
 
-        <div
-            id="qr-save-toast"
-            class="app-toast"
-            role="status"
-            aria-live="polite"
-        ></div>
+            <div
+                id="qr-save-toast"
+                class="app-toast"
+                role="status"
+                aria-live="polite"
+            ></div>
+        @endif
     </body>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    @if ($document->status === 'DRAFT')
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-    <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-    </script>
+        <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        </script>
 
-    <script>
+        <script>
     const pdfUrl = "{{ route('documents.original', $document) }}";
 
     let qrStates = @json($document->qrPositions);
@@ -1372,6 +1377,7 @@
 
     loadPdf();
 
-    </script>
+        </script>
+    @endif
 
     </html>

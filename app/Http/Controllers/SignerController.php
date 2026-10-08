@@ -41,8 +41,8 @@ class SignerController extends Controller
         ], [
             'name.required' => 'Nama penandatangan wajib diisi.',
             'position.required' => 'Jabatan wajib diisi.',
-            'work_unit.required' => 'Unit kerja wajib diisi.',
-            'institution.required' => 'Instansi wajib diisi.',
+            'work_unit.required' => 'Departemen wajib diisi.',
+            'institution.required' => 'Nama Perusahaan wajib diisi.',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
@@ -84,8 +84,8 @@ class SignerController extends Controller
         ], [
             'name.required' => 'Nama penandatangan wajib diisi.',
             'position.required' => 'Jabatan wajib diisi.',
-            'work_unit.required' => 'Unit kerja wajib diisi.',
-            'institution.required' => 'Instansi wajib diisi.',
+            'work_unit.required' => 'Departemen wajib diisi.',
+            'institution.required' => 'Nama Perusahaan wajib diisi.',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
